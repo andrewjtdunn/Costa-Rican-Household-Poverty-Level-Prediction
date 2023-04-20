@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "apwhy3"
+name = "Costa-Rican-Household-Poverty-Level-Prediction CAPP 30254 group"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Andrew Dunn, Katherine Dumais, Kathryn Link-Oberstar, Lee-Or Bentovim"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
