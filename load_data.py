@@ -9,18 +9,62 @@ def load_train_data():
     """
     to do: update doc string
     """
-    # Load
+    # Load data
     df = pd.read_csv("Kaggle_download/train.csv")
 
-    # Split into test and train
-    X_train, X_valid, y_train, y_valid = train_test_split(
-        df.iloc[:, :-1], df.iloc[:, -1:], test_size=0.2, random_state=2023
+    # Create new variables base on lit review
+    ###########################################################################
+
+    # highest level of education in household
+    def get_max_education_level(row):
+        education_levels = [
+            row["instlevel1"],
+            row["instlevel2"],
+            row["instlevel3"],
+            row["instlevel4"],
+            row["instlevel5"],
+            row["instlevel6"],
+            row["instlevel7"],
+            row["instlevel8"],
+            row["instlevel9"],
+        ]
+        return max(education_levels)
+
+    # Create a new column in the DataFrame representing the highest education level in a household
+    df["max_education_level"] = df.apply(get_max_education_level, axis=1)
+
+    # if there is a marriage in the household
+    df.loc[:, "hh_has_marriage"] = (
+        df.loc[:, "estadocivil3"].groupby(df.loc[:, "idhogar"]).transform("max")
     )
 
-    # Define household and individual variables
+    # max age in household
+    df.loc[:, "hh_max_age"] = (
+        df.loc[:, "age"].groupby(df.loc[:, "idhogar"]).transform("max")
+    )
 
-    # what is tamviv, dependency?
+    # sex ratio in household
+    # #male/#female
+    df.loc[:, "hh_sex_ratio"] = df.loc[:, "r4h3"] / df.loc[:, "r4m3"]
 
+    # child/woman ratio in household
+    # children defined as under 12
+    df.loc[:, "hh_child_woman_ratio"] = df.loc[:, "r4t1"] / df.loc[:, "r4m3"]
+
+    # child/adult ratio in household
+    # children defined as under 12
+    df.loc[:, "child_adult_ratio"] = df.loc[:, "r4t1"] / df.loc[:, "r4t2"]
+
+    # child/woman ratio in household
+    # children defined as under 19
+    df.loc[:, "hh_child_woman_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "r4m3"]
+
+    # child/adult ratio in household
+    # children defined as under 19
+    df.loc[:, "child_adult_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "hogar_adul"]
+
+    # Categorize household and individual variables
+    ###########################################################################
     hh_vars = [
         "v2a1",
         "hacdor",
@@ -169,6 +213,10 @@ def load_train_data():
         "agesq",
     ]
 
-    # Clean / Impute?
+    # Split into test and train
+    ###########################################################################
+    X_train, X_valid, y_train, y_valid = train_test_split(
+        df.iloc[:, :-1], df.iloc[:, -1:], test_size=0.2, random_state=2023
+    )
 
     return X_train, X_valid, y_train, y_valid
