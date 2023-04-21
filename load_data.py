@@ -13,7 +13,6 @@ def load_train_data():
     df = pd.read_csv("Kaggle_download/train.csv")
 
     # Split into test and train
-    np.random.seed(2023)
     X_train, X_valid, y_train, y_valid = train_test_split(
         df.iloc[:, :-1], df.iloc[:, -1:], test_size=0.2, random_state=2023
     )
