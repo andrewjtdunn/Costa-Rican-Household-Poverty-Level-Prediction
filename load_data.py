@@ -219,7 +219,6 @@ def load_train_data():
     # df = df.insert(0, last_col.name, last_col)
     # df = df.reindex(columns = [col for col in df.columns if col != 'Target'] + ['Target'])
     X_train, X_valid, y_train, y_valid = train_test_split(
-        df.iloc[:, :-1], df.iloc[:, -1:], test_size=0.2, random_state=2023
-    )
+        df.drop(columns='Target'), df.loc[:,['Target']], test_size=0.2, random_state=2023)
 
     return X_train, X_valid, y_train, y_valid
