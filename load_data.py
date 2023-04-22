@@ -216,7 +216,6 @@ def load_train_data():
     # Split into test and train
     ###########################################################################
     X_train, X_valid, y_train, y_valid = train_test_split(
-        df.iloc[:, :-1], df.iloc[:, -1:], test_size=0.2, random_state=2023
-    )
+        df.drop(columns='Target'), df.loc[:,['Target']], test_size=0.2, random_state=2023)
 
     return X_train, X_valid, y_train, y_valid
