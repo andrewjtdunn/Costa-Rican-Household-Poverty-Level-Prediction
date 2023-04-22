@@ -7,7 +7,15 @@ from sklearn.model_selection import train_test_split
 
 def load_train_data():
     """
-    to do: update doc string
+    Loads, cleans, and imputes new variables in Kaggle data
+
+    Input: None
+
+    Returns:
+        X_train (dataframe)
+        X_valid (dataframe)
+        y_train (dataframe)
+        y_valid (dataframe)
     """
     # Load data
     df = pd.read_csv("Kaggle_download/train.csv")
@@ -219,6 +227,10 @@ def load_train_data():
     # df = df.insert(0, last_col.name, last_col)
     # df = df.reindex(columns = [col for col in df.columns if col != 'Target'] + ['Target'])
     X_train, X_valid, y_train, y_valid = train_test_split(
-        df.drop(columns='Target'), df.loc[:,['Target']], test_size=0.2, random_state=2023)
+        df.drop(columns="Target"),
+        df.loc[:, ["Target"]],
+        test_size=0.2,
+        random_state=2023,
+    )
 
     return X_train, X_valid, y_train, y_valid
