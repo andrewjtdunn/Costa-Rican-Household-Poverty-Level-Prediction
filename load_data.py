@@ -27,10 +27,14 @@ def load_train_data():
     # edjefe
     df.loc[df.loc[:, "edjefe"] == "yes", "edjefe"] = 1
     df.loc[df.loc[:, "edjefe"] == "no", "edjefe"] = 0
+    # df.loc[:, "edjefe"] = df.loc[:, "edjefe"].astype(int)
+    df["edjefe"] = df["edjefe"].astype(str).astype(int)
 
     # edjefa
     df.loc[df.loc[:, "edjefa"] == "yes", "edjefa"] = 1
     df.loc[df.loc[:, "edjefa"] == "no", "edjefa"] = 0
+    # df.loc[:, "edjefa"] = df.loc[:, "edjefa"].astype(int)
+    df["edjefa"] = df["edjefa"].astype(str).astype(int)
 
     # Fix NAs for number of tablets owned
     df.loc[:, "v18q1"] = df.loc[:, "v18q1"].fillna(0)
@@ -92,7 +96,9 @@ def load_train_data():
     df.loc[:, "child_adult_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "hogar_adul"]
 
     # define logged value of v2a1, it provides a better distribution
-    df["v2a1_log"] = np.log1p(df["v2a1"].fillna(np.mean(df["v2a1"])))
+    df.loc[:, "v2a1_log"] = np.log1p(
+        df.loc[:, "v2a1"].fillna(np.mean(df.loc[:, "v2a1"]))
+    )
 
     # Reshape the data to be at household level rather than individual level
     ###########################################################################
