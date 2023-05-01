@@ -25,12 +25,12 @@ def load_train_data():
     # see here for info: https://www.kaggle.com/competitions/costa-rican-household-poverty-prediction/discussion/61751
 
     # edjefe
-    df.loc[df.loc[:, "edjefe"] == "yes"] = 1
-    df.loc[df.loc[:, "edjefe"] == "no"] = 0
+    df.loc[df.loc[:, "edjefe"] == "yes", "edjefe"] = 1
+    df.loc[df.loc[:, "edjefe"] == "no", "edjefe"] = 0
 
     # edjefa
-    df.loc[df.loc[:, "edjefa"] == "yes"] = 1
-    df.loc[df.loc[:, "edjefa"] == "no"] = 0
+    df.loc[df.loc[:, "edjefa"] == "yes", "edjefa"] = 1
+    df.loc[df.loc[:, "edjefa"] == "no", "edjefa"] = 0
 
     # NEED TO DECIDE WHAT TO DO WITH MISSING FIELDS
 
