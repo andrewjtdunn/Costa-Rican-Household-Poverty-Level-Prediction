@@ -20,6 +20,20 @@ def load_train_data():
     # Load data
     df = pd.read_csv("Kaggle_download/train.csv")
 
+    # Clean a couple data fields
+    ###########################################################################
+    # see here for info: https://www.kaggle.com/competitions/costa-rican-household-poverty-prediction/discussion/61751
+
+    # edjefe
+    df.loc[df.loc[:, "edjefe"] == "yes"] = 1
+    df.loc[df.loc[:, "edjefe"] == "no"] = 0
+
+    # edjefa
+    df.loc[df.loc[:, "edjefa"] == "yes"] = 1
+    df.loc[df.loc[:, "edjefa"] == "no"] = 0
+
+    # NEED TO DECIDE WHAT TO DO WITH MISSING FIELDS
+
     # Create new variables base on lit review
     ###########################################################################
 
@@ -57,169 +71,68 @@ def load_train_data():
 
     # child/woman ratio in household
     # children defined as under 12
+    # women defined as 12 and over
     df.loc[:, "hh_child_woman_ratio"] = df.loc[:, "r4t1"] / df.loc[:, "r4m3"]
 
     # child/adult ratio in household
     # children defined as under 12
+    # adults defined as 12 and over
     df.loc[:, "child_adult_ratio"] = df.loc[:, "r4t1"] / df.loc[:, "r4t2"]
 
     # child/woman ratio in household
     # children defined as under 19
-    df.loc[:, "hh_child_woman_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "r4m3"]
+    # women defined as 12 and over
+    # THIS IS A DATA QUALITY ISSUE -- CATS AREN'T MUTUALLY EXCLUSIVE
+    df.loc[:, "hh_child_woman_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "r4m2"]
 
     # child/adult ratio in household
     # children defined as under 19
+    # adults defined as 19 and over
     df.loc[:, "child_adult_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "hogar_adul"]
 
-    # Categorize household and individual variables
-    ###########################################################################
-    hh_vars = [
-        "v2a1",
-        "hacdor",
-        "rooms",
-        "hacapo",
-        "v14a",
-        "refrig",
-        "v18q",
-        "v18q1",
-        "r4h1",
-        "r4h2",
-        "r4h3",
-        "r4m1",
-        "r4m2",
-        "r4m3",
-        "r4t1",
-        "r4t2",
-        "r4t3",
-        "tamhog",
-        "tamviv",
-        "hhsize",
-        "paredblolad",
-        "paredzocalo",
-        "paredpreb",
-        "pareddes",
-        "paredmad",
-        "paredzinc",
-        "paredfibras",
-        "paredother",
-        "pisomoscer",
-        "pisocemento",
-        "pisoother",
-        "pisonatur",
-        "pisonotiene",
-        "pisomadera",
-        "techozinc",
-        "techoentrepiso",
-        "techocane",
-        "techootro",
-        "cielorazo",
-        "abastaguadentro",
-        "abastaguafuera",
-        "abastaguano",
-        "public",
-        "planpri",
-        "noelec",
-        "coopele",
-        "sanitario1",
-        "sanitario2",
-        "sanitario3",
-        "sanitario5",
-        "sanitario6",
-        "energcocinar1",
-        "energcocinar2",
-        "energcocinar3",
-        "energcocinar4",
-        "elimbasu1",
-        "elimbasu2",
-        "elimbasu3",
-        "elimbasu4",
-        "elimbasu5",
-        "elimbasu6",
-        "epared1",
-        "epared2",
-        "epared3",
-        "etecho1",
-        "etecho2",
-        "etecho3",
-        "eviv1",
-        "eviv2",
-        "eviv3",
-        "idhogar",
-        "hogar_nin",
-        "hogar_adul",
-        "hogar_mayor",
-        "hogar_total",
-        "dependency",
-        "edjefe",
-        "edjefa",
-        "meaneduc",
-        "bedrooms",
-        "overcrowding",
-        "tipovivi1",
-        "tipovivi2",
-        "tipovivi3",
-        "tipovivi4",
-        "tipovivi5",
-        "computer",
-        "television",
-        "mobilephone",
-        "qmobilephone",
-        "lugar1",
-        "lugar2",
-        "lugar3",
-        "lugar4",
-        "lugar5",
-        "lugar6",
-        "area1",
-        "area2",
-        "SQBhogar_total",
-        "SQBedjefe",
-        "SQBhogar_nin",
-        "SQBovercrowding",
-        "SQBdependency",
-        "SQBmeaned",
-        "Target",
-    ]
+    # define logged value of v2a1, it provides a better distribution
+    df["v2a1_log"] = np.log1p(df["v2a1"].fillna(np.mean(df["v2a1"])))
 
-    ind_vars = [
-        "escolari",
-        "rez_esc",
-        "dis",
-        "male",
-        "female",
-        "estadocivil1",
-        "estadocivil2",
-        "estadocivil3",
-        "estadocivil4",
-        "estadocivil5",
-        "estadocivil6",
-        "estadocivil7",
-        "parentesco1",
-        "parentesco2",
-        "parentesco3",
-        "parentesco4",
-        "parentesco5",
-        "parentesco6",
-        "parentesco7",
-        "parentesco8",
-        "parentesco9",
-        "parentesco10",
-        "parentesco11",
-        "parentesco12",
-        "instlevel1",
-        "instlevel2",
-        "instlevel3",
-        "instlevel4",
-        "instlevel5",
-        "instlevel6",
-        "instlevel7",
-        "instlevel8",
-        "instlevel9",
-        "age",
-        "SQBescolari",
-        "SQBage",
-        "agesq",
-    ]
+    # Reshape the data to be at household level rather than individual level
+    ###########################################################################
+
+    # pick the head of the household
+    df.loc[df.loc[:, "parentesco1"] == 1, "hh_head"] = 1
+
+    # create temp vars to determine if household head exists and max age in household
+    df.loc[:, "hh_head_exists"] = df.groupby([df.loc[:, "idhogar"]])[
+        "hh_head"
+    ].transform(max)
+
+    # in instances where there isn't a head of household, pick the oldest male
+    df.loc[
+        (
+            (df.loc[:, "hh_head_exists"] == 0)
+            & (df.loc[:, "age"] == df.loc[:, "hh_max_age"])
+            & (df.loc[:, "male"] == 1)
+        ),
+        "hh_head",
+    ] = 1
+
+    # update the temp hh head flag var
+    df.loc[:, "hh_head_exists"] = df.groupby([df.loc[:, "idhogar"]])[
+        "hh_head"
+    ].transform(max)
+
+    # in instances where there isn't an oldest male, pick the oldest
+    df.loc[
+        (
+            (df.loc[:, "hh_head_exists"] == 0)
+            & (df.loc[:, "age"] == df.loc[:, "hh_max_age"])
+        ),
+        "hh_head",
+    ] = 1
+
+    # drop the temp var
+    df = df.drop(columns="hh_head_exists")
+
+    # collapse the data
+    df = df.loc[df.loc[:, "hh_head"] == 1]
 
     # Split into test and train
     ###########################################################################
