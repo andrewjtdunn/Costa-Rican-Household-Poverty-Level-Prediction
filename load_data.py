@@ -32,7 +32,8 @@ def load_train_data():
     df.loc[df.loc[:, "edjefa"] == "yes", "edjefa"] = 1
     df.loc[df.loc[:, "edjefa"] == "no", "edjefa"] = 0
 
-    # NEED TO DECIDE WHAT TO DO WITH MISSING FIELDS
+    # Fix NAs for number of tablets owned
+    df.loc[:, "v18q1"] = df.loc[:, "v18q1"].fillna(0)
 
     # Create new variables base on lit review
     ###########################################################################
