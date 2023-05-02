@@ -2,7 +2,10 @@
 
 import pandas as pd
 import numpy as np
+import json
 from sklearn.model_selection import train_test_split
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
 
 
 def load_train_data():
@@ -101,11 +104,6 @@ def load_train_data():
     # adults defined as 19 and over
     df.loc[:, "child_adult_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "hogar_adul"]
 
-    # define logged value of v2a1, it provides a better distribution
-    df.loc[:, "v2a1_log"] = np.log1p(
-        df.loc[:, "v2a1"].fillna(np.mean(df.loc[:, "v2a1"]))
-    )
-
     # Reshape the data to be at household level rather than individual level
     ###########################################################################
 
@@ -146,6 +144,24 @@ def load_train_data():
 
     # drop the temp var and other household head vars
     df = df.drop(columns=["hh_head_exists", "parentesco1", "hh_head"])
+
+    with open('var_descriptions.json', 'r') as f:
+    # Load JSON data as a dictionary
+        var_desc = json.load(f)
+    
+    features_to_include = [x for x in var_desc.keys() if x not in ['Id', 'idhogar', 'dependency', 'rez_esc', 'hh_head', 'parentesco1', 'hh_head_exists']]
+    df_subset = df[features_to_include]
+
+    # impute mean values
+    imp_mean = IterativeImputer(random_state=0,n_nearest_features=5)
+    imp_mean.fit(df_subset)
+    mean_subset = imp_mean.transform(df_subset)
+    df.loc[:,'v2a1'] = mean_subset[:,0]
+    df.loc[df.loc[:,'v2a1'] < 0, 'v2a1'] = 0
+
+    # define logged value of v2a1, it provides a better distribution
+    df['v2a1_log'] = np.log1p(df['v2a1'])
+    
 
     # Split into test and train
     ###########################################################################
