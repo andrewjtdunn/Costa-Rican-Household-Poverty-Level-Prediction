@@ -149,9 +149,6 @@ def load_train_data():
 
     # Split into test and train
     ###########################################################################
-    # last_col = df.pop("Target")
-    # df = df.insert(0, last_col.name, last_col)
-    # df = df.reindex(columns = [col for col in df.columns if col != 'Target'] + ['Target'])
     X_train, X_valid, y_train, y_valid = train_test_split(
         df.drop(columns="Target"),
         df.loc[:, ["Target"]],
@@ -159,4 +156,7 @@ def load_train_data():
         random_state=2023,
     )
 
-    return X_train, X_valid, y_train, y_valid
+    # merge the train sets back together
+    df = X_train.merge(y_train, left_index=True, right_index=True)
+
+    return df, X_valid, y_valid
