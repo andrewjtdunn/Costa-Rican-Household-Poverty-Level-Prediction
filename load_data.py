@@ -37,11 +37,10 @@ def load_train_data():
     df["edjefa"] = df["edjefa"].astype(str).astype(int)
 
     # ASSUME DEPENDENCY HAS THE SAME MISCODING
-    # https://www.kaggle.com/competitions/costa-rican-household-poverty-prediction/discussion/73055
+    # https://www.kaggle.com/competitions/costa-rican-household-povertyx-prediction/discussion/73055
     df.loc[df.loc[:, "dependency"] == "yes", "dependency"] = 1
     df.loc[df.loc[:, "dependency"] == "no", "dependency"] = 0
-    # df.loc[:, "edjefa"] = df.loc[:, "edjefa"].astype(int)
-    df["dependency"] = df["dependency"].astype(str).astype(int)
+    df["dependency"] = df["dependency"].astype(str).astype(float)
 
     # Fix NAs for number of tablets owned
     df.loc[:, "v18q1"] = df.loc[:, "v18q1"].fillna(0)
@@ -142,11 +141,11 @@ def load_train_data():
         "hh_head",
     ] = 1
 
-    # drop the temp var
-    df = df.drop(columns="hh_head_exists")
-
     # collapse the data
     df = df.loc[df.loc[:, "hh_head"] == 1]
+
+    # drop the temp var and other household head vars
+    df = df.drop(columns=["hh_head_exists", "parentesco1", "hh_head"])
 
     # Split into test and train
     ###########################################################################
