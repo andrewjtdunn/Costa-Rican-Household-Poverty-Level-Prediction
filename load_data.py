@@ -36,6 +36,13 @@ def load_train_data():
     # df.loc[:, "edjefa"] = df.loc[:, "edjefa"].astype(int)
     df["edjefa"] = df["edjefa"].astype(str).astype(int)
 
+    # ASSUME DEPENDENCY HAS THE SAME MISCODING
+    # https://www.kaggle.com/competitions/costa-rican-household-poverty-prediction/discussion/73055
+    df.loc[df.loc[:, "dependency"] == "yes", "dependency"] = 1
+    df.loc[df.loc[:, "dependency"] == "no", "dependency"] = 0
+    # df.loc[:, "edjefa"] = df.loc[:, "edjefa"].astype(int)
+    df["dependency"] = df["dependency"].astype(str).astype(int)
+
     # Fix NAs for number of tablets owned
     df.loc[:, "v18q1"] = df.loc[:, "v18q1"].fillna(0)
 
