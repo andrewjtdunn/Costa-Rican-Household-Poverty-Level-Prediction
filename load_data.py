@@ -15,9 +15,8 @@ def load_train_data():
     Input: None
 
     Returns:
-        X_train (dataframe)
+        df (dataframe), composed of X_train and y_train
         X_valid (dataframe)
-        y_train (dataframe)
         y_valid (dataframe)
     """
     # Load data
@@ -30,13 +29,11 @@ def load_train_data():
     # edjefe
     df.loc[df.loc[:, "edjefe"] == "yes", "edjefe"] = 1
     df.loc[df.loc[:, "edjefe"] == "no", "edjefe"] = 0
-    # df.loc[:, "edjefe"] = df.loc[:, "edjefe"].astype(int)
     df["edjefe"] = df["edjefe"].astype(str).astype(int)
 
     # edjefa
     df.loc[df.loc[:, "edjefa"] == "yes", "edjefa"] = 1
     df.loc[df.loc[:, "edjefa"] == "no", "edjefa"] = 0
-    # df.loc[:, "edjefa"] = df.loc[:, "edjefa"].astype(int)
     df["edjefa"] = df["edjefa"].astype(str).astype(int)
 
     # ASSUME DEPENDENCY HAS THE SAME MISCODING
@@ -48,7 +45,7 @@ def load_train_data():
     # Fix NAs for number of tablets owned
     df.loc[:, "v18q1"] = df.loc[:, "v18q1"].fillna(0)
 
-    # Create new variables base on lit review
+    # Create new individual-level variables base on lit review
     ###########################################################################
 
     # highest level of education in household
@@ -145,6 +142,9 @@ def load_train_data():
     # drop the temp var and other household head vars
     df = df.drop(columns=["hh_head_exists", "parentesco1", "hh_head"])
 
+    # Create household-level variables
+    ###########################################################################
+
     with open("var_descriptions.json", "r") as f:
         # Load JSON data as a dictionary
         var_desc = json.load(f)
@@ -164,8 +164,6 @@ def load_train_data():
         ]
     ]
     df_subset = df[features_to_include]
-
-    # Create household-level variables
 
     # impute mean rent values
     imp_mean = IterativeImputer(random_state=0, n_nearest_features=5)
