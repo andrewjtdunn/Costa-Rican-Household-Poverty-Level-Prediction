@@ -175,6 +175,14 @@ def load_train_data():
     # define logged value of v2a1, it provides a better distribution
     df["v2a1_log"] = np.log1p(df["v2a1"])
 
+    # Clean up NAs and inf values
+    cols_to_drop = ['Id', 'idhogar', 'rez_esc']
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    for col in cols_to_drop:
+        if col in df.columns:
+            df.drop(col, axis=1, inplace=True)
+    df.fillna(df.mean(), inplace=True)
+
     # Split into test and train
     ###########################################################################
     X_train, X_valid, y_train, y_valid = train_test_split(
