@@ -6,7 +6,7 @@ import json
 from sklearn.model_selection import train_test_split
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
-
+import warnings
 
 def load_train_data():
     """
@@ -165,10 +165,14 @@ def load_train_data():
     ]
     df_subset = df[features_to_include]
 
-    # impute mean rent values
-    imp_mean = IterativeImputer(random_state=0, n_nearest_features=5)
-    imp_mean.fit(df_subset)
-    mean_subset = imp_mean.transform(df_subset)
+    # impute mean rent values while suppressing error message
+    with warnings.catch_warnings():
+        warnings.simplefilter(action='ignore', category=Warning)
+        imp_mean = IterativeImputer(random_state=0, n_nearest_features=5)
+        imp_mean.fit(df_subset)
+        mean_subset = imp_mean.transform(df_subset)
+
+    # replace 0s    
     df.loc[:, "v2a1"] = mean_subset[:, 0]
     df.loc[df.loc[:, "v2a1"] < 0, "v2a1"] = 0
 
