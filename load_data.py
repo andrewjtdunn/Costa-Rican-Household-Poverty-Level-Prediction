@@ -88,7 +88,7 @@ def load_train_data():
     # child/adult ratio in household
     # children defined as under 12
     # adults defined as 12 and over
-    df.loc[:, "child_adult_ratio"] = df.loc[:, "r4t1"] / df.loc[:, "r4t2"]
+    df.loc[:, "hh_child_adult_ratio"] = df.loc[:, "r4t1"] / df.loc[:, "r4t2"]
 
     # child/woman ratio in household
     # children defined as under 19
@@ -99,7 +99,7 @@ def load_train_data():
     # child/adult ratio in household
     # children defined as under 19
     # adults defined as 19 and over
-    df.loc[:, "child_adult_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "hogar_adul"]
+    df.loc[:, "hh_child_adult_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "hogar_adul"]
 
     # Reshape the data to be at household level rather than individual level
     ###########################################################################
