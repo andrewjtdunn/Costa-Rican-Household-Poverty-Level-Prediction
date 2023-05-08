@@ -87,23 +87,23 @@ def load_train_data():
     # child/woman ratio in household
     # children defined as under 12
     # women defined as 12 and over
-    df.loc[:, "hh_child_woman_ratio"] = df.loc[:, "r4t1"] / df.loc[:, "r4m3"]
+    df.loc[:, "hh_child_woman_ratio_12"] = df.loc[:, "r4t1"] / df.loc[:, "r4m3"]
 
     # child/adult ratio in household
     # children defined as under 12
     # adults defined as 12 and over
-    df.loc[:, "hh_child_adult_ratio"] = df.loc[:, "r4t1"] / df.loc[:, "r4t2"]
+    df.loc[:, "hh_child_adult_ratio_12"] = df.loc[:, "r4t1"] / df.loc[:, "r4t2"]
 
     # child/woman ratio in household
     # children defined as under 19
     # women defined as 12 and over
     # THIS IS A DATA QUALITY ISSUE -- CATS AREN'T MUTUALLY EXCLUSIVE
-    df.loc[:, "hh_child_woman_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "r4m2"]
+    df.loc[:, "hh_child_woman_ratio_19"] = df.loc[:, "hogar_nin"] / df.loc[:, "r4m2"]
 
     # child/adult ratio in household
     # children defined as under 19
     # adults defined as 19 and over
-    df.loc[:, "hh_child_adult_ratio"] = df.loc[:, "hogar_nin"] / df.loc[:, "hogar_adul"]
+    df.loc[:, "hh_child_adult_ratio_19"] = df.loc[:, "hogar_nin"] / df.loc[:, "hogar_adul"]
 
     # Reshape the data to be at household level rather than individual level
     ###########################################################################
