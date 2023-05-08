@@ -1,2 +1,4 @@
 
 regression_results.csv
+.DS_Store
+__pycache__
