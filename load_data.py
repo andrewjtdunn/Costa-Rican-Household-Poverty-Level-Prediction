@@ -7,6 +7,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 import warnings
+from imblearn.over_sampling import RandomOverSampler, SVMSMOTE
+
+SEED = 2023
+
 
 def load_train_data():
     """
@@ -193,10 +197,41 @@ def load_train_data():
         df.drop(columns="Target"),
         df.loc[:, ["Target"]],
         test_size=0.2,
-        random_state=2023,
+        random_state = SEED,
     )
 
     # merge the train sets back together
     df = X_train.merge(y_train, left_index=True, right_index=True)
 
     return df, X_valid, y_valid
+
+
+# Generate randomly oversampled data
+def gen_oversample_date():
+    '''
+    UPDATE DOC STRING
+    '''
+
+    df, X_valid, y_valid = load_train_data()
+    X = df.iloc[:, :-1]
+    y = df.loc[:, 'Target']
+
+    ros = RandomOverSampler(random_state = SEED)
+    train_X_resampled, train_y_resampled = ros.fit_resample(X, y)
+
+    return train_X_resampled, train_y_resampled
+
+
+# Generate SMOTE data
+def gen_SMOTE_data():
+    '''
+    UPDATE DOC STRING
+    '''
+    df, X_valid, y_valid = load_train_data()
+    X = df.iloc[:, :-1]
+    y = df.loc[:, 'Target']
+
+    sm = SVMSMOTE(random_state = SEED )
+    X_smote, y_smote = sm.fit_resample(X, y)
+
+    return X_smote, y_smote
