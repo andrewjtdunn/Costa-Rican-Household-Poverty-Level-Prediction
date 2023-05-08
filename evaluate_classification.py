@@ -1,7 +1,7 @@
 # Helper function to evaluate ML model classifications
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, f1_score, recall_score
 
-def evaluate_classification(y_pred, y_true, l=[1,2,3,4], cm=False, return_vals=False):
+def evaluate_classification(y_pred, y_true, labels=[1,2,3,4], cm=False, return_vals=False):
     '''
     COMPLETE DOC STRING
     '''
@@ -13,8 +13,8 @@ def evaluate_classification(y_pred, y_true, l=[1,2,3,4], cm=False, return_vals=F
     print("Recall:", 'Label 1:', recall[0].round(2), 'Label 2:', recall[1].round(2), 
           'Label 3:', recall[2].round(2), 'Label 4:', recall[3].round(2))
     if cm is True:
-        cm = confusion_matrix(y_true, y_pred, labels=l)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=l)
+        cm = confusion_matrix(y_true, y_pred, labels=labels)
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
         disp.plot()
     
     if return_vals:
