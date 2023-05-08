@@ -18,4 +18,4 @@ def evaluate_classification(y_pred, y_true, labels=[1,2,3,4], cm=False, return_v
         disp.plot()
     
     if return_vals:
-        return accuracy, f1, recall
+        return accuracy.round(2), f1.round(2), [round(x,2) for x in recall]
