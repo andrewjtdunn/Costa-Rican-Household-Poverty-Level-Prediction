@@ -12,11 +12,11 @@ from imblearn.over_sampling import RandomOverSampler, SVMSMOTE
 SEED = 2023
 
 
-def load_train_data():
+def load_train_data(file_path = "Kaggle_download/train.csv"):
     """
     Loads, cleans, and imputes new variables in Kaggle data
 
-    Input: None
+    Input: default is the train data (csv file)
 
     Returns:
         df (dataframe), composed of X_train and y_train
@@ -24,7 +24,7 @@ def load_train_data():
         y_valid (dataframe)
     """
     # Load data
-    df = pd.read_csv("Kaggle_download/train.csv")
+    df = pd.read_csv(file_path)
 
     # Clean a couple data fields
     ###########################################################################
