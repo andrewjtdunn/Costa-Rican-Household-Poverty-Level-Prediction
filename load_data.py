@@ -12,11 +12,13 @@ from imblearn.over_sampling import RandomOverSampler, SVMSMOTE
 SEED = 2023
 
 
-def load_train_data(file_path = "Kaggle_download/train.csv"):
+def load_train_data(file = "Kaggle_download/train.csv", seed = SEED):
     """
     Loads, cleans, and imputes new variables in Kaggle data
 
-    Input: default is the train data (csv file)
+    Input: 
+        file (csv): optional, default is the train data
+        seed (int): optional seed
 
     Returns:
         df (dataframe), composed of X_train and y_train
@@ -197,7 +199,7 @@ def load_train_data(file_path = "Kaggle_download/train.csv"):
         df.drop(columns="Target"),
         df.loc[:, ["Target"]],
         test_size=0.2,
-        random_state = SEED,
+        random_state = seed,
     )
 
     # merge the train sets back together
@@ -207,31 +209,47 @@ def load_train_data(file_path = "Kaggle_download/train.csv"):
 
 
 # Generate randomly oversampled data
-def gen_oversample_date():
+def gen_oversample_date(df, seed = SEED):
     '''
-    UPDATE DOC STRING
+    Generate resampled dataframes.
+
+    Inputs:
+        df (dataframe): data and labels 
+        seed (int): optional seed
+    
+    Returns:
+        train_X_resampled (dataframe): the resampled data
+        train_y_resampled (dataframe): the resampled labels
+
     '''
 
-    df, X_valid, y_valid = load_train_data()
     X = df.iloc[:, :-1]
     y = df.loc[:, 'Target']
 
-    ros = RandomOverSampler(random_state = SEED)
+    ros = RandomOverSampler(random_state = seed)
     train_X_resampled, train_y_resampled = ros.fit_resample(X, y)
 
     return train_X_resampled, train_y_resampled
 
 
 # Generate SMOTE data
-def gen_SMOTE_data():
+def gen_SMOTE_data(df, seed = SEED):
     '''
-    UPDATE DOC STRING
+    Generate SMOTE dataframes.
+
+    Inputs:
+        df (dataframe): data and labels 
+        seed (int): optional seed
+    
+    Returns:
+        X_smote (dataframe): the resampled data
+        y_smote (dataframe): the resampled labels
     '''
-    df, X_valid, y_valid = load_train_data()
+
     X = df.iloc[:, :-1]
     y = df.loc[:, 'Target']
 
-    sm = SVMSMOTE(random_state = SEED )
+    sm = SVMSMOTE(random_state = seed)
     X_smote, y_smote = sm.fit_resample(X, y)
 
     return X_smote, y_smote
