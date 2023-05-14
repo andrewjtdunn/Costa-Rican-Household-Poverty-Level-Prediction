@@ -26,7 +26,7 @@ def load_train_data(file = "Kaggle_download/train.csv", seed = SEED):
         y_valid (dataframe)
     """
     # Load data
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(file)
 
     # Clean a couple data fields
     ###########################################################################
