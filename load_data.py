@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import json
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 import warnings
@@ -12,7 +13,7 @@ from imblearn.over_sampling import RandomOverSampler, SVMSMOTE
 SEED = 2023
 
 
-def load_train_data(file = "Kaggle_download/train.csv", seed = SEED):
+def load_train_data(filepath = "Kaggle_download/train.csv", seed = SEED):
     """
     Loads, cleans, and imputes new variables in Kaggle data
 
@@ -26,7 +27,7 @@ def load_train_data(file = "Kaggle_download/train.csv", seed = SEED):
         y_valid (dataframe)
     """
     # Load data
-    df = pd.read_csv(file)
+    df = pd.read_csv(filepath)
 
     # Clean a couple data fields
     ###########################################################################
@@ -193,6 +194,7 @@ def load_train_data(file = "Kaggle_download/train.csv", seed = SEED):
             df.drop(col, axis=1, inplace=True)
     df.fillna(df.mean(), inplace=True)
 
+    """
     # Split into test and train
     ###########################################################################
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -206,8 +208,14 @@ def load_train_data(file = "Kaggle_download/train.csv", seed = SEED):
     df = X_train.merge(y_train, left_index=True, right_index=True)
 
     return df, X_valid, y_valid
+    """
+    
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
+    indices = skf.split(df.drop(columns="Target"),
+        df.loc[:, ["Target"]]
+    )
 
-
+    return df, indices
 # Generate randomly oversampled data
 def gen_oversample_date(df, seed = SEED):
     '''
