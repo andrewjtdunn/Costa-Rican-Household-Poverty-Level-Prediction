@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import json
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 import warnings
@@ -12,11 +13,13 @@ from imblearn.over_sampling import RandomOverSampler, SVMSMOTE
 SEED = 2023
 
 
-def load_train_data():
+def load_train_data(filepath = "Kaggle_download/train.csv", seed = SEED):
     """
     Loads, cleans, and imputes new variables in Kaggle data
 
-    Input: None
+    Input: 
+        file (csv): optional, default is the train data
+        seed (int): optional seed
 
     Returns:
         df (dataframe), composed of X_train and y_train
@@ -24,7 +27,7 @@ def load_train_data():
         y_valid (dataframe)
     """
     # Load data
-    df = pd.read_csv("Kaggle_download/train.csv")
+    df = pd.read_csv(filepath)
 
     # Clean a couple data fields
     ###########################################################################
@@ -191,47 +194,70 @@ def load_train_data():
             df.drop(col, axis=1, inplace=True)
     df.fillna(df.mean(), inplace=True)
 
+    """
     # Split into test and train
     ###########################################################################
     X_train, X_valid, y_train, y_valid = train_test_split(
         df.drop(columns="Target"),
         df.loc[:, ["Target"]],
         test_size=0.2,
-        random_state = SEED,
+        random_state = seed,
     )
 
     # merge the train sets back together
     df = X_train.merge(y_train, left_index=True, right_index=True)
 
     return df, X_valid, y_valid
+    """
+    
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
+    indices = skf.split(df.drop(columns="Target"),
+        df.loc[:, ["Target"]]
+    )
 
-
+    return df, indices
 # Generate randomly oversampled data
-def gen_oversample_date():
+def gen_oversample_date(df, seed = SEED):
     '''
-    UPDATE DOC STRING
+    Generate resampled dataframes.
+
+    Inputs:
+        df (dataframe): data and labels 
+        seed (int): optional seed
+    
+    Returns:
+        train_X_resampled (dataframe): the resampled data
+        train_y_resampled (dataframe): the resampled labels
+
     '''
 
-    df, X_valid, y_valid = load_train_data()
     X = df.iloc[:, :-1]
     y = df.loc[:, 'Target']
 
-    ros = RandomOverSampler(random_state = SEED)
+    ros = RandomOverSampler(random_state = seed)
     train_X_resampled, train_y_resampled = ros.fit_resample(X, y)
 
     return train_X_resampled, train_y_resampled
 
 
 # Generate SMOTE data
-def gen_SMOTE_data():
+def gen_SMOTE_data(df, seed = SEED):
     '''
-    UPDATE DOC STRING
+    Generate SMOTE dataframes.
+
+    Inputs:
+        df (dataframe): data and labels 
+        seed (int): optional seed
+    
+    Returns:
+        X_smote (dataframe): the resampled data
+        y_smote (dataframe): the resampled labels
     '''
-    df, X_valid, y_valid = load_train_data()
+
     X = df.iloc[:, :-1]
     y = df.loc[:, 'Target']
 
-    sm = SVMSMOTE(random_state = SEED )
+    sm = SVMSMOTE(random_state = seed)
     X_smote, y_smote = sm.fit_resample(X, y)
 
     return X_smote, y_smote
