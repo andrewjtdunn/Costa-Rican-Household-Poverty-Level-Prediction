@@ -42,3 +42,5 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None, oversample=
         model.fit(X_train, y_train)
         y_pred = model.predict(X_valid)
         results[key] = evaluate_classification(y_pred, y_valid, cm = True, return_vals=True)
+
+        return results
