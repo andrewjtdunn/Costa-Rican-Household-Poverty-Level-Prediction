@@ -194,7 +194,6 @@ def load_train_data(filepath = "Kaggle_download/train.csv", seed = SEED):
             df.drop(col, axis=1, inplace=True)
     df.fillna(df.mean(), inplace=True)
 
-    """
     # Split into test and train
     ###########################################################################
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -207,17 +206,29 @@ def load_train_data(filepath = "Kaggle_download/train.csv", seed = SEED):
     # merge the train sets back together
     df = X_train.merge(y_train, left_index=True, right_index=True)
 
-    return df, X_valid, y_valid
-    """
-    
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
-    indices = skf.split(df.drop(columns="Target"),
-        df.loc[:, ["Target"]]
-    )
+    train_indices, valid_indices = implement_kfold(df)
 
-    return df, indices
+    return df, X_valid, y_valid, train_indices, valid_indices
+
+def implement_kfold(df, n_splits=5, shuffle=True, random_state=SEED):
+    """
+    DOC STRING TK
+    """
+
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
+    indices = skf.split(df.drop(columns="Target"), df.loc[:, ["Target"]])
+
+    train_indices = {}
+    valid_indices = {}
+
+    for i, (train_index, valid_index) in enumerate(indices):
+        train_indices[i] = train_index
+        valid_indices[i] = valid_index
+
+    return train_indices, valid_indices
+
 # Generate randomly oversampled data
-def gen_oversample_date(df, seed = SEED):
+def gen_oversample_data(df, seed = SEED):
     '''
     Generate resampled dataframes.
 
@@ -253,7 +264,6 @@ def gen_SMOTE_data(df, seed = SEED):
         X_smote (dataframe): the resampled data
         y_smote (dataframe): the resampled labels
     '''
-
     X = df.iloc[:, :-1]
     y = df.loc[:, 'Target']
 
