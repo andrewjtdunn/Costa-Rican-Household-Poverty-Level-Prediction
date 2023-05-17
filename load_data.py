@@ -9,11 +9,13 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 import warnings
 from imblearn.over_sampling import RandomOverSampler, SVMSMOTE
+import loops
+import os
 
 SEED = 2023
 
 
-def load_train_data(filepath = "Kaggle_download/train.csv", seed = SEED):
+def load_train_data(filepath="Kaggle_download/train.csv", seed=SEED):
     """
     Loads, cleans, and imputes new variables in Kaggle data
 
@@ -156,11 +158,7 @@ def load_train_data(filepath = "Kaggle_download/train.csv", seed = SEED):
         # Load JSON data as a dictionary
         var_desc = json.load(f)
 
-    features_to_include = [
-        x
-        for x in var_desc.keys()
-        if x
-        not in [
+    features_to_include = [x for x in var_desc.keys() if x not in [
             "Id",
             "idhogar",
             "dependency",
@@ -197,11 +195,8 @@ def load_train_data(filepath = "Kaggle_download/train.csv", seed = SEED):
     # Split into test and train
     ###########################################################################
     X_train, X_valid, y_train, y_valid = train_test_split(
-        df.drop(columns="Target"),
-        df.loc[:, ["Target"]],
-        test_size=0.2,
-        random_state = seed,
-    )
+        df.drop(columns="Target"), df.loc[:, ["Target"]],
+        test_size=0.2, random_state = seed)
 
     # merge the train sets back together
     df = X_train.merge(y_train, left_index=True, right_index=True)
@@ -212,10 +207,27 @@ def load_train_data(filepath = "Kaggle_download/train.csv", seed = SEED):
 
 def implement_kfold(df, n_splits=5, shuffle=True, random_state=SEED):
     """
-    DOC STRING TK
+    This helper function implements stratified k-fold cross validation. 
+        Primarily called within the load_data function but can be called 
+        independently
+
+    Inputs:
+    df (DataFrame): a dataframe with features and a target column
+    n_splits (int, optional): k, the number of splits to make in the dataframe
+    shuffle (Bool, optional): Whether to shuffle each class's samples before 
+        splitting into batches.
+    random_state (int, optional): the random seed to set for replicability
+
+    Outputs:
+    train_indices (dictionary): A dictionary with keys referring to an 
+        individual fold (from k-fold) and values referring to the indexes to 
+        include as training data for that pass
+    valid_indices (dictionary): A dictionary with keys referring to an 
+        individual fold (from k-fold) and values referring to the indexes to 
+        include as validation data for that pass
     """
 
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
     indices = skf.split(df.drop(columns="Target"), df.loc[:, ["Target"]])
 
     train_indices = {}
@@ -227,7 +239,6 @@ def implement_kfold(df, n_splits=5, shuffle=True, random_state=SEED):
 
     return train_indices, valid_indices
 
-# Generate randomly oversampled data
 def gen_oversample_data(df, seed = SEED):
     '''
     Generate resampled dataframes.
@@ -250,8 +261,6 @@ def gen_oversample_data(df, seed = SEED):
 
     return train_X_resampled, train_y_resampled
 
-
-# Generate SMOTE data
 def gen_SMOTE_data(df, seed = SEED):
     '''
     Generate SMOTE dataframes.
@@ -271,3 +280,12 @@ def gen_SMOTE_data(df, seed = SEED):
     X_smote, y_smote = sm.fit_resample(X, y)
 
     return X_smote, y_smote
+
+
+def two_step(model, df, train_indices, valid_indices, oversample=None, var_thresh=False):
+    print("Classification for 4")
+    loops.loop_model(model,df,train_indices,valid_indices,oversample=None,var_thresh=False)
+    not_pred= df.loc[df.loc[:,'Target'].isin([1,2,3]),:]
+    train_indices_not, valid_indices_not = implement_kfold(not_pred, n_splits=5, shuffle=True, random_state=SEED)
+    print("Classification for 1,2,3")
+    loops.loop_model(model,not_pred,train_indices_not, valid_indices_not ,oversample=oversample ,var_thresh=var_thresh)
