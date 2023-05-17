@@ -9,13 +9,13 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 import warnings
 from imblearn.over_sampling import RandomOverSampler, SVMSMOTE
-from Exploratory_analysis import loops
+import loops
 import os
 
 SEED = 2023
 
 
-def load_train_data(filepath="Costa-Rican-Household-Poverty-Level-Prediction/Kaggle_download/train.csv", seed=SEED):
+def load_train_data(filepath="Kaggle_download/train.csv", seed=SEED):
     """
     Loads, cleans, and imputes new variables in Kaggle data
 
@@ -154,7 +154,7 @@ def load_train_data(filepath="Costa-Rican-Household-Poverty-Level-Prediction/Kag
     # Create household-level variables
     ###########################################################################
 
-    with open("Costa-Rican-Household-Poverty-Level-Prediction/var_descriptions.json", "r") as f:
+    with open("var_descriptions.json", "r") as f:
         # Load JSON data as a dictionary
         var_desc = json.load(f)
 
