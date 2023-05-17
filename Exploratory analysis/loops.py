@@ -74,7 +74,7 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None,
         
         # If provided scaler, rescale X on both sides
         if scaler:
-            X_train = scaler.transform(X_train)
+            X_train = scaler.fit_transform(X_train)
             X_valid = scaler.transform(X_valid)
         
         # Fit our model, then predict it and evaluate performance
@@ -82,5 +82,5 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None,
         y_pred = model.predict(X_valid)
         results[key] = evaluate_classification(y_pred, y_valid, cm = True, return_vals=True)
 
-    
+
     return results
