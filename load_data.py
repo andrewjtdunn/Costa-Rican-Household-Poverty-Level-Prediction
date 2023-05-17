@@ -9,7 +9,7 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 import warnings
 from imblearn.over_sampling import RandomOverSampler, SVMSMOTE
-import loops
+from exploratory_analysis import loops
 import os
 
 SEED = 2023

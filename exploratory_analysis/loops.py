@@ -1,12 +1,14 @@
 import os
 import pandas as pd
+from sklearn.feature_selection import VarianceThreshold
 
 current_dir = os.getcwd()
-parent_dir = os.path.dirname(current_dir)
-os.chdir(parent_dir)
+if "exploratory" in current_dir:
+    parent_dir = os.path.dirname(current_dir)
+    os.chdir(parent_dir)
+import evaluate_classification as ec
+os.chdir(current_dir)
 
-from evaluate_classification import evaluate_classification
-from sklearn.feature_selection import VarianceThreshold
 
 def loop_model(model, df, train_indices, valid_indices, scaler=None, 
                oversample=None, var_thresh=False):
@@ -80,6 +82,6 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None,
         # Fit our model, then predict it and evaluate performance
         model.fit(X_train, y_train)
         y_pred = model.predict(X_valid)
-        results[key] = evaluate_classification(y_pred, y_valid, cm = True, return_vals=True)
+        results[key] = ec.evaluate_classification(y_pred, y_valid, cm = True, return_vals=True)
 
     return results
