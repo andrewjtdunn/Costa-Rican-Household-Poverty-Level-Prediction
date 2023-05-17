@@ -27,7 +27,7 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None,
         individual fold (from k-fold) and values referring to the indexes to 
         include as validation data for that pass
     scaler (SKLearn Scaling Object, optional): Any pre-instantiated sklearn 
-        scaler that has the transform method
+        scaler that has the transform and fit_transform method
     oversample (function, optional): Any pre-existing function (two target
         functions are in load_data) which can be passed in. the function MUST 
         take in a df object and return X and y oversampled
@@ -81,6 +81,5 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None,
         model.fit(X_train, y_train)
         y_pred = model.predict(X_valid)
         results[key] = evaluate_classification(y_pred, y_valid, cm = True, return_vals=True)
-
 
     return results
