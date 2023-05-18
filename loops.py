@@ -71,10 +71,7 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None,
         if scaler:
             X_train = scaler.fit_transform(X_train)
             X_valid = scaler.transform(X_valid)
-<<<<<<< HEAD
-=======
         
->>>>>>> f63f50db5befb0ec79ee4733a3ad1feb0bcb3ea0
         # Fit our model, then predict it and evaluate performance
         model.fit(X_train, y_train)
         y_pred = model.predict(X_valid)
