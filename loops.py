@@ -1,12 +1,4 @@
-import os
 import pandas as pd
-
-<<<<<<< HEAD
-=======
-#current_dir = os.getcwd()
-#parent_dir = os.path.dirname(current_dir)
-#os.chdir(parent_dir)
->>>>>>> f63f50db5befb0ec79ee4733a3ad1feb0bcb3ea0
 
 from evaluate_classification import evaluate_classification
 from sklearn.feature_selection import VarianceThreshold
