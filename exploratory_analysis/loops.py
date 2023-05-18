@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import evaluate_classification
 from sklearn.feature_selection import VarianceThreshold
 
 current_dir = os.getcwd()
