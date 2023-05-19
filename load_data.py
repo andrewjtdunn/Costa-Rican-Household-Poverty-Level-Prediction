@@ -194,7 +194,7 @@ def load_train_data(filepath="Kaggle_download/train.csv", seed=SEED):
 
     # Split into test and train
     ###########################################################################
-    X_train, X_valid, y_train, y_valid = train_test_split(
+    X_train, X_test, y_train, y_test = train_test_split(
         df.drop(columns="Target"), df.loc[:, ["Target"]],
         test_size=0.2, random_state = seed)
 
@@ -203,7 +203,7 @@ def load_train_data(filepath="Kaggle_download/train.csv", seed=SEED):
 
     train_indices, valid_indices = implement_kfold(df)
 
-    return df, X_valid, y_valid, train_indices, valid_indices
+    return df, X_test, y_test, train_indices, valid_indices
 
 def implement_kfold(df, n_splits=5, shuffle=True, random_state=SEED):
     """
