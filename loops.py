@@ -4,7 +4,7 @@ from evaluate_classification import evaluate_classification
 from sklearn.feature_selection import VarianceThreshold
 
 def loop_model(model, df, train_indices, valid_indices, scaler=None, 
-               oversample=None, var_thresh=False):
+               oversample=None, var_thresh=False, labels = [1,2,3,4], inc_cm = True):
     """
     This function runs an already k-fold cross validated dataset through a loop
         of each fold through a provided ML model, with optionality to add 
@@ -28,6 +28,9 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None,
         take in a df object and return X and y oversampled
     var_thresh (Boolean): Boolean flag for using a variance threshold to remove
         features with low variance
+    labels (list): A list of labels to pass to confusion matrix, [1,2,3,4]
+        if not otherwise specified
+    inc_cm (Boolean): Boolean flag of whether or not to print a confusion matrix
 
     Outputs:
     results (dictionary): A dictionary with key being the pass through the 
@@ -75,6 +78,6 @@ def loop_model(model, df, train_indices, valid_indices, scaler=None,
         # Fit our model, then predict it and evaluate performance
         model.fit(X_train, y_train)
         y_pred = model.predict(X_valid)
-        results[key] = evaluate_classification(y_pred, y_valid, cm = True, return_vals=True)
+        results[key] = evaluate_classification(y_pred, y_valid, l=labels ,cm=inc_cm, return_vals=True)
 
     return results
