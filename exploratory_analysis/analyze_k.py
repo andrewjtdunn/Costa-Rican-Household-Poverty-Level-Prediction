@@ -48,11 +48,16 @@ def average_outcome(result_dict):
     avg_dict = {}
     avg_dict['accuracy'] = np.mean([result_dict[x]['accuracy'] for x in result_dict.keys()])
     avg_dict['f1'] = np.mean([result_dict[x]['f1'] for x in result_dict.keys()])
-    avg_dict['recall_1'] = np.mean([result_dict[x]['recall'][0] for x in result_dict.keys()])
-    avg_dict['recall_2'] = np.mean([result_dict[x]['recall'][1] for x in result_dict.keys()])
-    avg_dict['recall_3'] = np.mean([result_dict[x]['recall'][2] for x in result_dict.keys()])
-    avg_dict['recall_4'] = np.mean([result_dict[x]['recall'][3] for x in result_dict.keys()])
+    avg_dict['Macro f1'] = np.mean([result_dict[x]['Macro f1'] for x in result_dict.keys()])
+
+    num_cats = len(result_dict[0]['recall'])
+    if num_cats == 2:
+        avg_dict['recall_non_pov'] = np.mean([result_dict[x]['recall'][0] for x in result_dict.keys()])
+        avg_dict['recall_pov'] = np.mean([result_dict[x]['recall'][1] for x in result_dict.keys()])
+        avg_dict['precision_non_pov'] = np.mean([result_dict[x]['precision'][0] for x in result_dict.keys()])
+        avg_dict['precision_pov'] = np.mean([result_dict[x]['precision'][1] for x in result_dict.keys()])
+    for i in range(num_cats):
+        avg_dict[f'recall_{i+1}'] = np.mean([result_dict[x]['recall'][i] for x in result_dict.keys()])
+        avg_dict[f'precision_{i+1}'] = np.mean([result_dict[x]['precision'][i] for x in result_dict.keys()])
 
     return avg_dict
-
-
