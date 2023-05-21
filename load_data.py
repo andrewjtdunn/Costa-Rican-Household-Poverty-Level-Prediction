@@ -264,7 +264,7 @@ def gen_SMOTE_data(df, seed = SEED):
         X_smote (dataframe): the resampled data
         y_smote (dataframe): the resampled labels
     '''
-    X = df.iloc[:, :-1]
+    X = df.drop(columns='Target')
     y = df.loc[:, 'Target']
 
     sm = SVMSMOTE(random_state = seed)
