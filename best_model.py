@@ -1,4 +1,4 @@
-# This file contains our best model after extensive testing
+# This file contains our best performing model after extensive testing
 
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
@@ -15,7 +15,10 @@ def best_model(df):
 
     Input (dataframe): the cleaned training data
 
-    Returns (model object): log_reg, the trained model
+    Returns:
+        log_reg (model object): the trained model
+        col_names (list): the names of the most informative columns, as chosen
+            by the model
     """
     sel = VarianceThreshold(threshold=0.16)
     X = df.drop(columns="Target").copy()
@@ -30,6 +33,7 @@ def best_model(df):
     sel_df.index = y.index
     sel_df.loc[:, "Target"] = y
     df = sel_df
+    col_names = df.columns
 
     # Apply SMOTE oversampling
     X_smote, y_smote = load_data.gen_SMOTE_data(df=df)
@@ -39,4 +43,4 @@ def best_model(df):
     # Fit model on the SMOTE data
     log_reg.fit(X_smote, y_smote)
 
-    return log_reg
+    return log_reg, col_names
